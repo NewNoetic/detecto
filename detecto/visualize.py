@@ -63,9 +63,9 @@ def detect_live(model, score_filter=0.6):
         # If the 'q' or ESC key is pressed, break from the loop
         key = cv2.waitKey(1) & 0xFF
         if key == ord('q') or key == 27:
+            wvs.stop()
             break
 
-    wvs.stop()
     cv2.destroyWindow('Detecto')
 
 
