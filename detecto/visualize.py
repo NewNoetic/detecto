@@ -5,7 +5,7 @@ import torch
 
 from detecto.utils import reverse_normalize, normalize_transform, _is_iterable
 from torchvision import transforms
-
+from imutils.video import WebcamVideoStream
 
 def detect_live(model, score_filter=0.6):
     """Displays in a window the given model's predictions on the current
@@ -29,18 +29,20 @@ def detect_live(model, score_filter=0.6):
         >>> model = Model()
         >>> detect_live(model, score_filter=0.7)
     """
+    print(f'opencv cuda device count {cv2.cuda.getCudaEnabledDeviceCount()}')   
 
     cv2.namedWindow('Detecto')
     try:
         video = cv2.VideoCapture(0)
+        video.release()
     except:
         print('No webcam available.')
         return
 
+    wvs = WebcamVideoStream(src=0).start()
+    
     while True:
-        ret, frame = video.read()
-        if not ret:
-            break
+        frame = wvs.read()
 
         labels, boxes, scores = model.predict(frame)
 
@@ -50,6 +52,7 @@ def detect_live(model, score_filter=0.6):
                 continue
 
             box = boxes[i]
+            box = list(map(lambda b: int(b), box))
             cv2.rectangle(frame, (box[0], box[1]), (box[2], box[3]), (255, 0, 0), 3)
             if labels:
                 cv2.putText(frame, '{}: {}'.format(labels[i], round(scores[i].item(), 2)), (box[0], box[1] - 10),
@@ -62,8 +65,8 @@ def detect_live(model, score_filter=0.6):
         if key == ord('q') or key == 27:
             break
 
+    wvs.stop()
     cv2.destroyWindow('Detecto')
-    video.release()
 
 
 def detect_video(model, input_file, output_file, fps=30, score_filter=0.6):
