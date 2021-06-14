@@ -4,8 +4,8 @@ opencv-python==4.5.2.52
 pandas==1.2.4
 pytest
 sphinx
-torch==1.6.0
-torchvision==0.7.0
+torch==1.8.1
+torchvision==0.8.1
 tqdm==4.61.0
 imutils==0.5.4
 ipywidgets==7.6.3
